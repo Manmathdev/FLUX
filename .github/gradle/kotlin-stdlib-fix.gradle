@@ -1,0 +1,26 @@
+// ============================================================================
+//  Fix for: "Duplicate class ... found in kotlin-stdlib-1.8.22 and
+//  kotlin-stdlib-jdk7/jdk8-1.6.21" during the Android build.
+//
+//  Why it happens: Kotlin 1.8+ MERGED the old kotlin-stdlib-jdk7 / -jdk8
+//  classes into the main kotlin-stdlib artifact. But some transitive
+//  dependency still drags in the old 1.6.21 jdk7/jdk8 artifacts (which still
+//  contain those classes), so Android sees the same class defined twice.
+//
+//  Fix: force every Kotlin stdlib variant to the SAME version (1.8.22). At
+//  1.8.22 the jdk7/jdk8 artifacts are empty backward-compat shells, so the
+//  duplicates disappear.
+//
+//  This is a Gradle "init script" — it runs automatically for every project
+//  in the build. The workflow installs it under ~/.gradle/init.d/ before
+//  running ./gradlew.
+// ============================================================================
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22"
+        }
+    }
+}
