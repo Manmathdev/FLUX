@@ -1,0 +1,325 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ----------------------------------------------------------------------------
+   FLUX — base
+---------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  /* Native WebView: kill rubber-band / overscroll bounce for an app feel. */
+  overscroll-behavior: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ----------------------------------------------------------------------------
+   Signature entrance animation — "blur fade up"
+---------------------------------------------------------------------------- */
+@keyframes blurFadeUp {
+  0% {
+    opacity: 0;
+    filter: blur(20px);
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.blur-fade-up {
+  opacity: 0;
+  animation: blurFadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ----------------------------------------------------------------------------
+   Mobile dropdown motion
+---------------------------------------------------------------------------- */
+@keyframes dropIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInX {
+  0% {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.drop-in {
+  animation: dropIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.slide-in-x {
+  opacity: 0;
+  animation: slideInX 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ----------------------------------------------------------------------------
+   Background video + blur overlay (blur localized toward the bottom)
+---------------------------------------------------------------------------- */
+/* Solid pure-black full-bleed background (z-0). Offline-friendly, instant. */
+.bg-solid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #000;
+}
+
+/* ----------------------------------------------------------------------------
+   Signature component — "LIQUID GLASS"
+   Near-invisible glass surface with a faint luminous rim (fake border via mask).
+---------------------------------------------------------------------------- */
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.01);
+  background-blend-mode: luminosity;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  transition: background 0.3s ease;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 20%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.15) 80%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Stronger glass for dense surfaces (modals, editors) — still rimless glass */
+.liquid-panel {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.035);
+  background-blend-mode: luminosity;
+  -webkit-backdrop-filter: blur(26px) saturate(120%);
+  backdrop-filter: blur(26px) saturate(120%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.12);
+}
+
+.liquid-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.4px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.18) 18%,
+    rgba(255, 255, 255, 0) 42%,
+    rgba(255, 255, 255, 0) 58%,
+    rgba(255, 255, 255, 0.18) 82%,
+    rgba(255, 255, 255, 0.5) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* hover washes (kept monochrome) */
+.gh:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ----------------------------------------------------------------------------
+   Form controls
+---------------------------------------------------------------------------- */
+.field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  color: #fff;
+  outline: none;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+.field::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+.field:focus {
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+select.field option {
+  background: #111;
+  color: #fff;
+}
+
+/* ----------------------------------------------------------------------------
+   Markdown preview
+---------------------------------------------------------------------------- */
+.prose-flux {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.prose-flux h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.6em 0 0.3em;
+  color: #fff;
+}
+.prose-flux h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.6em 0 0.3em;
+  color: #fff;
+}
+.prose-flux h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.5em 0 0.3em;
+  color: #fff;
+}
+.prose-flux p {
+  margin: 0.5em 0;
+}
+.prose-flux ul {
+  list-style: disc;
+  padding-left: 1.25em;
+  margin: 0.5em 0;
+}
+.prose-flux ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+  margin: 0.5em 0;
+}
+.prose-flux li {
+  margin: 0.2em 0;
+}
+.prose-flux a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-flux strong {
+  font-weight: 600;
+  color: #fff;
+}
+.prose-flux em {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.7);
+}
+.prose-flux code {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  background: rgba(255, 255, 255, 0.09);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+.prose-flux blockquote {
+  border-left: 2px solid rgba(255, 255, 255, 0.28);
+  padding-left: 0.8em;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0.6em 0;
+}
+.prose-flux hr {
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  margin: 0.8em 0;
+}
+
+/* ----------------------------------------------------------------------------
+   Scrollbars (thin, translucent)
+---------------------------------------------------------------------------- */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ----------------------------------------------------------------------------
+   Native safe-area insets (Android status bar / gesture nav).
+   No-op on desktop web (insets are 0 there), so the layout is unchanged.
+---------------------------------------------------------------------------- */
+.nav-top {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
+}
+@media (min-width: 640px) {
+  .nav-top {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);
+  }
+}
+.main-top {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 6rem);
+}
+@media (min-width: 640px) {
+  .main-top {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 7rem);
+  }
+}
+.main-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+}
